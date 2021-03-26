@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_10_131915) do
+ActiveRecord::Schema.define(version: 2021_03_26_151155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,12 @@ ActiveRecord::Schema.define(version: 2020_04_10_131915) do
     t.datetime "updated_at", null: false
     t.index ["ride_id"], name: "index_driver_rides_on_ride_id"
     t.index ["user_id"], name: "index_driver_rides_on_user_id"
+  end
+
+  create_table "networks", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "passenger_rides", force: :cascade do |t|
@@ -41,12 +47,16 @@ ActiveRecord::Schema.define(version: 2020_04_10_131915) do
     t.boolean "open"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "network_id"
+    t.index ["network_id"], name: "index_rides_on_network_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "network_id"
+    t.index ["network_id"], name: "index_users_on_network_id"
   end
 
   add_foreign_key "driver_rides", "rides"

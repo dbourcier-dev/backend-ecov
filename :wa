@@ -1,0 +1,10 @@
+require 'rails_helper'
+
+RSpec.describe Network, type: :model do
+  subject { described_class.new }
+
+  it 'should have a valid name' do
+    subject.name = 'Nantes'
+    assert(subject.valid?)
+  end
+end
