@@ -8,12 +8,19 @@ module Mutations
     field :driver_ride, Types::DriverRideType, "The created driver ride", null: true
     field :errors, [String], "The list of errors if it failed. Empty if succeed.", null: true
 
-    def resolve(**options)
-      passenger_ride = DriverRide.new(**options)
-      if passenger_ride.save
-        p passenger_ride
+    ##
+    # Attach a driver to a given ride
+    #
+    # @param user_id  [ID] the id of the driver.
+    # @param ride_id [ID] the id of the ride.
+    #
+    # @return [Hash] a hash containing the created driver ride.
+    #
+    def resolve(user_id:, ride_id:)
+      driver_ride = DriverRide.new(user_id: user_id, ride_id: ride_id)
+      if driver_ride.save
         {
-          driver_ride: passenger_ride,
+          driver_ride: driver_ride,
           errors: []
         }
       else

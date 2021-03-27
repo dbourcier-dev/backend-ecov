@@ -8,8 +8,15 @@ module Mutations
     field :passenger_ride, Types::PassengerRideType, "The created passenger ride", null: true
     field :errors, [String], "The list of errors if it failed. Empty if succeed.", null: true
 
-    def resolve(**options)
-      passenger_ride = PassengerRide.new(**options)
+    ##
+    # Create a passanger ride.
+    #
+    # @param user_id [ID] the id of the passenger.
+    # @param ride_id [ID] the id of the ride.
+    #
+    # @return [Hash] a hash containing the created pasenger ride.
+    def resolve(user_id:, ride_id:)
+      passenger_ride = PassengerRide.new(user_id: user_id, ride_id: ride_id)
       if passenger_ride.save
         {
           passenger_ride: passenger_ride,

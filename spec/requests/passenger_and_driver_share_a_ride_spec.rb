@@ -1,67 +1,33 @@
 require "rails_helper"
 
 RSpec.describe "Ride sharing between a driver and a passenger", :type => :request do
+  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Toulouse"} }
   let(:network){ Network.create(name: "Toulouse") }
   let(:driver){ User.create(email: "david@email.com", network: network) }
   let(:passenger){User.create(email: "peter@email.com", network: network)}
   let(:ride){Ride.create(departure: "ici", arrival: "la", network: network) }
-
-  it "creates a Widget and redirects to the Widget's page" do
-    post "/graphql", params: {
-      query: "mutation{
-        createDriverRide(
-          input: {
-          	userId: #{driver.id},
-          	rideId: #{ride.id}
-        	}
-        ){
-          driverRide{
-            id
+  let(:driver_ride) { DriverRide.create(user_id: driver.id, ride_id: ride.id) }
+  let(:passenger_ride) { PassengerRide.create(user_id: passenger.id, ride_id: ride.id) }
+  let(:request_params) {
+      {
+        query: "mutation{
+          shareRide(
+            input: {
+              driverRideId: #{driver_ride.id},
+              passengerRideId: #{passenger_ride.id}
+            }
+          ){
+            passengerRide{
+              id
+            }
+            errors
           }
-          errors
-        }
-      }"
+        }"
+      }
     }
-
-    expect(DriverRide.last.user).to eq(driver)
-    expect(DriverRide.last.ride).to eq(ride)
-
-    post "/graphql", params: {
-      query: "mutation{
-        createPassengerRide(
-          input: {
-          	userId: #{passenger.id},
-          	rideId: #{ride.id}
-        	}
-        ){
-          passengerRide{
-            id
-          }
-          errors
-        }
-      }"
-    }
-
-    expect(PassengerRide.last.user).to eq(passenger)
-    expect(PassengerRide.last.ride).to eq(ride)
-
-    post "/graphql", params: {
-      query: "mutation{
-        shareRide(
-          input: {
-          	driverRideId: #{DriverRide.last.id},
-          	passengerRideId: #{PassengerRide.last.id}
-        	}
-        ){
-          passengerRide{
-            id
-          }
-          errors
-        }
-      }"
-    }
-
-    p response.body
+  subject { post "/graphql", params: request_params, headers: headers }
+  it "should attach the driver to the passenger ride" do
+    subject
     expect(PassengerRide.last.driver_ride).to eq(DriverRide.last)
   end
 end
