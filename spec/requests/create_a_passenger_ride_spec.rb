@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "A passenger registers for a given ride", :type => :request do
-  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Toulouse"} }
+  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Toulouse")} }
   let(:network){ Network.create(name: "Toulouse") }
   let(:passenger){User.create(email: "peter@email.com", network: network)}
   let(:ride){Ride.create(departure: "ici", arrival: "la", network: network) }
@@ -33,7 +33,7 @@ RSpec.describe "A passenger registers for a given ride", :type => :request do
   end
 
   context "When the passenger is not from the current network" do
-    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Nantes"} }
+    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Nantes")} }
     before do
       Network.create(name: "Nantes")
     end

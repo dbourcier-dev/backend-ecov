@@ -9,7 +9,7 @@ module Types
     #
     # @return [User[]]a collection of users.
     def users
-      User.where(network_id: context[:current_network].id)
+      User.where(network_id: context[:current_network]&.id)
     end
   end
 end

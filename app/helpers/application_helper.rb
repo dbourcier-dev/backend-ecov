@@ -9,9 +9,10 @@ module ApplicationHelper
   #
   # @return the current network
   def current_network
-    current_network_name = request.headers[CURRENT_NETWORK_HEADER]
-    raise_error(MISSING_HEADER_MESSAGE) unless current_network_name
+    encoded_network_name = request.headers[CURRENT_NETWORK_HEADER]
+    raise_error(MISSING_HEADER_MESSAGE) unless encoded_network_name
 
+    current_network_name = Base64.strict_decode64(encoded_network_name)
     network = Network.find_by_name(current_network_name)
     raise_error(UNKNOWN_NETWORK_MESSAGE) unless network
 

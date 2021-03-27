@@ -1,9 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Get the full list of users", type: :request do
-  let(:network_name) { "Toulouse" }
-  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => network_name} }
-  let(:toulouse) { Network.create(name: network_name) }
+  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Toulouse") } }
+  let(:toulouse) { Network.create(name: "Toulouse") }
   let(:paris) { Network.create(name: "Paris") }
   let(:david) { { email: "david@email.com", network: toulouse } }
   let(:peter) { { email: "peter@email.com", network: paris } }
@@ -34,7 +33,7 @@ RSpec.describe "Get the full list of users", type: :request do
   end
 
   context "when the network doesn't exitst" do
-    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Nantes" } }
+    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Nantes") } }
     it "should raise an error" do
       assert_raises(ArgumentError) {subject}
     end

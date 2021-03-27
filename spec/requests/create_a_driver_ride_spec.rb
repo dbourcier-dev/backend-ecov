@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Driver register for a given ride", :type => :request do
-  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Toulouse"} }
+  let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Toulouse")} }
   let(:network){ Network.create(name: "Toulouse") }
   let(:driver){ User.create(email: "david@email.com", network: network) }
   let(:ride){Ride.create(departure: "ici", arrival: "la", network: network) }
@@ -34,7 +34,7 @@ RSpec.describe "Driver register for a given ride", :type => :request do
   end
 
   context "When the user is not from the current network" do
-    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Nantes"} }
+    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => Base64.strict_encode64("Nantes")} }
     before do
       Network.create(name: "Nantes")
     end
@@ -56,7 +56,6 @@ RSpec.describe "Driver register for a given ride", :type => :request do
       expect(response).to be_successful
       result = JSON.parse(response.body)
       expect(result["data"]["createDriverRide"]).to be_nil
-
     end
   end
 end

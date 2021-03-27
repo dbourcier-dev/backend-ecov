@@ -18,7 +18,7 @@ module Mutations
     #
     def resolve(passenger_ride_id:, driver_ride_id:)
       passenger_ride = PassengerRide.find(passenger_ride_id)
-
+      check_network!(passenger_ride: passenger_ride)
       if passenger_ride.update(driver_ride_id: driver_ride_id)
         {
           passenger_ride: passenger_ride,
@@ -30,6 +30,13 @@ module Mutations
           errors: passenger_ride.errors.full_messages
         }
       end
+    end
+
+    private
+
+    def check_network!(passenger_ride:)
+      same_network?(network_id: passenger_ride&.ride&.network&.id) ||
+        forbiden!
     end
   end
 end
