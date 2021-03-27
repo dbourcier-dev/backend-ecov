@@ -7,19 +7,21 @@ RSpec.describe "Driver register for a given ride", :type => :request do
   let(:ride){Ride.create(departure: "ici", arrival: "la", network: network) }
   let(:request_params) {
     {
-      query: "mutation{
-        createDriverRide(
-          input: {
-            userId: #{driver.id},
-            rideId: #{ride.id}
+      query: <<-GRAPHQL
+        mutation{
+          createDriverRide(
+            input: {
+              userId: #{driver.id},
+              rideId: #{ride.id}
+            }
+          ){
+            driverRide{
+              id
+            }
+            errors
           }
-        ){
-          driverRide{
-            id
-          }
-          errors
         }
-      }"
+      GRAPHQL
     }
   }
 
@@ -29,5 +31,32 @@ RSpec.describe "Driver register for a given ride", :type => :request do
 
     expect(DriverRide.last.user).to eq(driver)
     expect(DriverRide.last.ride).to eq(ride)
+  end
+
+  context "When the user is not from the current network" do
+    let(:headers) { {"HTTP_X_CURRENT_NETWORK" => "Nantes"} }
+    before do
+      Network.create(name: "Nantes")
+    end
+    it "should reject the creation of the ride" do
+      subject
+
+      expect(response).to be_successful
+      result = JSON.parse(response.body)
+      expect(result["data"]["createDriverRide"]).to be_nil
+    end
+  end
+
+  context "When the ride is not on the current network" do
+    let(:nantes) { Network.create(name: "Nantes") }
+    let(:ride){ Ride.create(departure: "ici", arrival: "la", network: nantes) }
+    it "should reject the creation of the ride" do
+      subject
+
+      expect(response).to be_successful
+      result = JSON.parse(response.body)
+      expect(result["data"]["createDriverRide"]).to be_nil
+
+    end
   end
 end

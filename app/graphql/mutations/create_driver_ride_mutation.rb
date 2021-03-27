@@ -17,6 +17,7 @@ module Mutations
     # @return [Hash] a hash containing the created driver ride.
     #
     def resolve(user_id:, ride_id:)
+      authorized_network!(user_id: user_id, ride_id: ride_id)
       driver_ride = DriverRide.new(user_id: user_id, ride_id: ride_id)
       if driver_ride.save
         {

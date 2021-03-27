@@ -18,6 +18,7 @@ module Mutations
     #
     def resolve(passenger_ride_id:, driver_ride_id:)
       passenger_ride = PassengerRide.find(passenger_ride_id)
+
       if passenger_ride.update(driver_ride_id: driver_ride_id)
         {
           passenger_ride: passenger_ride,
