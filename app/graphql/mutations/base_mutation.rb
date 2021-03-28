@@ -12,12 +12,15 @@ module Mutations
     # The operation is authorized only if the user end the ride
     # are from the current network.
     #
+    # @raise [GraphQL::ExecutionError] raised when the user  or the
+    # given ride is not part of the current network
+    #
     def authorized_network!(ride_id:, user_id:)
       (user_on_network?(user_id: user_id) && ride_on_network?(ride_id: ride_id)) || forbiden!
     end
 
     ##
-    # To be used when we the asked operation is not authorized.
+    # To be used when the asked operation is not authorized.
     #
     def forbiden!
       raise GraphQL::ExecutionError, UNAUTHORIZED_NETWORK

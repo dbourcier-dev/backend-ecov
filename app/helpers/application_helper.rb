@@ -3,11 +3,13 @@ module ApplicationHelper
   MISSING_HEADER_MESSAGE = "Missing value for X_CURRENT_NETWORK header".freeze
   UNKNOWN_NETWORK_MESSAGE = "Unknown network provided".freeze
 
-
   ##
   # Get the network for the current request
   #
   # @return the current network
+  # @raise [ArgumentError] when there is no current network provided
+  # or when the network is unknown.
+  #
   def current_network
     encoded_network_name = request.headers[CURRENT_NETWORK_HEADER]
     raise_error(MISSING_HEADER_MESSAGE) unless encoded_network_name
